@@ -116,13 +116,12 @@ public class ThreadPoolMonitor extends ThreadPoolExecutor {
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
         long costTime = System.currentTimeMillis() - startTime.get();
-        System.out.println("costtime: " + costTime);
         //设置最大最小执行时间
         maxCostTime = maxCostTime > costTime ? maxCostTime : costTime;
         minCostTime = minCostTime <costTime ? minCostTime : costTime;
         totalCostTime.addAndGet(costTime);
         totalTasks.incrementAndGet();
-        startTime.remove();
+        startTime.remove();  //删除，避免占用太多内存
 
         // 统计任务耗时、初始线程数、核心线程数、正在执行的任务数量、
         // 已完成任务数量、任务总数、队列里缓存的任务数量、池中存在的最大线程数、

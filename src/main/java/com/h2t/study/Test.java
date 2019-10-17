@@ -39,14 +39,15 @@ public class Test {
         new Thread(() -> {
             for (int i = 0; i < 10; i++) {
                 int temp = i;
-
-                //随机睡眠时间
-                try {
-                    Thread.sleep(random.nextInt(60) * 1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                es.submit(() -> System.out.println(temp));
+                es.submit(() -> {
+                    //随机睡眠时间
+                    try {
+                        Thread.sleep(random.nextInt(60) * 1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println(temp);
+                });
             }
         }).start();
     }
