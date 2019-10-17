@@ -49,7 +49,7 @@ public class ThreadPoolParam implements ThreadPoolParamMBean  {
     }
 
     /**
-     * 线程池曾经创建过的最大线程数量。通过这个数据可以知道线程池是否满过，也就是达到了maximumPoolSize
+     * 线程池曾经创建过的最大线程数量
      *
      * @return
      */
@@ -79,12 +79,42 @@ public class ThreadPoolParam implements ThreadPoolParamMBean  {
     }
 
     /**
-     * 线程池已经执行的和未执行的任务总数
+     * 线程池需要执行的任务数量
      *
      * @return
      */
      @Override
     public long getTaskCount() {
         return threadPoolMonitor.getTaskCount();
+    }
+
+    /**
+     * 线程最大耗时
+     *
+     * @return
+     * */
+    @Override
+    public long getMaxCostTime() {
+        return threadPoolMonitor.getMaxCostTime();
+    }
+
+    /**
+     * 线程最小耗时
+     *
+     * @return
+     * */
+    @Override
+    public long getMinCostTime() {
+        return threadPoolMonitor.getMinCostTime();
+    }
+
+    /**
+     * 线程平均耗时
+     *
+     * @return
+     * */
+    @Override
+    public float getAverageCostTime() {
+        return threadPoolMonitor.getAverageCostTime();
     }
 }

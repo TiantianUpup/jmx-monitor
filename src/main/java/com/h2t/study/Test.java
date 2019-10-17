@@ -5,6 +5,7 @@ import com.h2t.study.monitor.ThreadPoolMonitor;
 
 import javax.management.*;
 import java.lang.management.ManagementFactory;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -15,18 +16,38 @@ import java.util.concurrent.ExecutorService;
  * @Version: 1.0
  */
 public class Test {
+    private static Random random = new Random();
     public static void main(String[] args) throws MalformedObjectNameException, NotCompliantMBeanException, InstanceAlreadyExistsException, MBeanRegistrationException, InterruptedException {
-        ExecutorService es = ThreadPoolMonitor.newCachedThreadPool("test-pool");
-        ThreadPoolParam threadPoolParam = new ThreadPoolParam(es);
-        MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-        server.registerMBean(threadPoolParam, new ObjectName("test-jmx:type=threadPoolParam"));
+        ExecutorService es1 = ThreadPoolMonitor.newCachedThreadPool("test-pool-1");
+        ThreadPoolParam threadPoolParam1 = new ThreadPoolParam(es1);
 
-        for (int i = 0; i < 100; i++) {
-            int temp = i;
-            Thread.sleep(3000);
-            es.submit(() -> System.out.println(temp));
-        }
+        ExecutorService es2 = ThreadPoolMonitor.newCachedThreadPool("test-pool-2");
+        ThreadPoolParam threadPoolParam2 = new ThreadPoolParam(es2);
+
+        MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+        server.registerMBean(threadPoolParam1, new ObjectName("test-pool-1:type=threadPoolParam"));
+        server.registerMBean(threadPoolParam2, new ObjectName("test-pool-2:type=threadPoolParam"));
+
+
+        executeTask(es1);
+        executeTask(es2);
 
         Thread.sleep(1000 * 60 * 60);
+    }
+
+    private static void executeTask(ExecutorService es) {
+        new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                int temp = i;
+
+                //随机睡眠时间
+                try {
+                    Thread.sleep(random.nextInt(60) * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                es.submit(() -> System.out.println(temp));
+            }
+        }).start();
     }
 }

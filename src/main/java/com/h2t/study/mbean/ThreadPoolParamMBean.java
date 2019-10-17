@@ -29,7 +29,7 @@ public interface ThreadPoolParamMBean {
     int getCorePoolSize();
 
     /**
-     * 线程池曾经创建过的最大线程数量。通过这个数据可以知道线程池是否满过，也就是达到了maximumPoolSize
+     * 线程池曾经创建过的最大线程数量
      *
      * @return
      */
@@ -50,9 +50,30 @@ public interface ThreadPoolParamMBean {
     int getPoolSize();
 
     /**
-     * 线程池已经执行的和未执行的任务总数
+     * 线程池需要执行的任务数量
      *
      * @return
      */
     long getTaskCount();
+
+    /**
+     * 线程最大耗时
+     *
+     * @return
+     * */
+    long getMaxCostTime();
+
+    /**
+     * 线程最小耗时
+     *
+     * @return
+     * */
+    long getMinCostTime();
+
+    /**
+     * 线程平均耗时
+     *
+     * @return
+     * */
+    float getAverageCostTime();
 }

@@ -3,11 +3,11 @@ package com.h2t.study.monitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @Description: 线程池监控类
@@ -19,17 +19,41 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ThreadPoolMonitor extends ThreadPoolExecutor {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
+    /**
+     * ActiveCount
+     * */
     int ac = 0;
 
     /**
-     * 保存任务开始执行的时间，当任务结束时，用任务结束时间减去开始时间计算任务执行时间
-     */
-    private ConcurrentHashMap<String, Date> startTimes;
+     * 当前所有线程消耗的时间
+     * */
+    private AtomicLong totalCostTime = new AtomicLong();
+
+    /**
+     * 当前执行的线程总数
+     * */
+    private AtomicLong totalTasks = new AtomicLong();
 
     /**
      * 线程池名称
      */
     private String poolName;
+
+    /**
+     * 最短 执行时间
+     * */
+    private long minCostTime;
+
+    /**
+     * 最长执行时间
+     * */
+    private long maxCostTime;
+
+
+    /**
+     * 保存任务开始执行的时间
+     */
+    private ThreadLocal<Long> startTime = new ThreadLocal<>();
 
     public ThreadPoolMonitor(int corePoolSize, int maximumPoolSize, long keepAliveTime,
                              TimeUnit unit, BlockingQueue<Runnable> workQueue, String poolName) {
@@ -41,27 +65,13 @@ public class ThreadPoolMonitor extends ThreadPoolExecutor {
                              TimeUnit unit, BlockingQueue<Runnable> workQueue,
                              ThreadFactory threadFactory, String poolName) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory);
-        this.startTimes = new ConcurrentHashMap<>();
         this.poolName = poolName;
     }
 
-    /**
-     * 创建固定线程池
-     *
-     * @param nThreads 线程数量
-     * @param poolName 线程池名称
-     * @return ExecutorService对象
-     */
     public static ExecutorService newFixedThreadPool(int nThreads, String poolName) {
         return new ThreadPoolMonitor(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), poolName);
     }
 
-    /**
-     * 创建缓存型线程池，代码源于Executors.newCachedThreadPool方法，这里增加了poolName
-     *
-     * @param poolName 线程池名称
-     * @return ExecutorService对象
-     */
     public static ExecutorService newCachedThreadPool(String poolName) {
         return new ThreadPoolMonitor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>(), poolName);
     }
@@ -97,7 +107,7 @@ public class ThreadPoolMonitor extends ThreadPoolExecutor {
      */
     @Override
     protected void beforeExecute(Thread t, Runnable r) {
-        startTimes.put(String.valueOf(r.hashCode()), new Date());
+        startTime.set(System.currentTimeMillis());
     }
 
     /**
@@ -105,9 +115,15 @@ public class ThreadPoolMonitor extends ThreadPoolExecutor {
      */
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
-        Date startDate = startTimes.remove(String.valueOf(r.hashCode()));
-        Date finishDate = new Date();
-        long diff = finishDate.getTime() - startDate.getTime();
+        long costTime = System.currentTimeMillis() - startTime.get();
+        System.out.println("costtime: " + costTime);
+        //设置最大最小执行时间
+        maxCostTime = maxCostTime > costTime ? maxCostTime : costTime;
+        minCostTime = minCostTime <costTime ? minCostTime : costTime;
+        totalCostTime.addAndGet(costTime);
+        totalTasks.incrementAndGet();
+        startTime.remove();
+
         // 统计任务耗时、初始线程数、核心线程数、正在执行的任务数量、
         // 已完成任务数量、任务总数、队列里缓存的任务数量、池中存在的最大线程数、
         // 最大允许的线程数、线程空闲时间、线程池是否关闭、线程池是否终止
@@ -123,6 +139,33 @@ public class ThreadPoolMonitor extends ThreadPoolExecutor {
         ac = this.getActiveCount();
         LOGGER.info("CorePoolSize: {}, ActiveCount: {}",
              this.getCorePoolSize(), this.getActiveCount());
+    }
+
+    public int getAc() {
+        return ac;
+    }
+
+    /**
+     * 线程平均耗时
+     *
+     * @return
+     * */
+    public float getAverageCostTime() {
+        return totalCostTime.get() / totalTasks.get();
+    }
+
+    /**
+     * 线程最大耗时
+     * */
+    public long getMaxCostTime() {
+        return maxCostTime;
+    }
+
+    /**
+     * 线程最小耗时
+     * */
+    public long getMinCostTime() {
+        return minCostTime;
     }
 
     /**
@@ -154,10 +197,5 @@ public class ThreadPoolMonitor extends ThreadPoolExecutor {
                 t.setPriority(Thread.NORM_PRIORITY);
             return t;
         }
-    }
-
-
-    public int getAc() {
-        return ac;
     }
 }
