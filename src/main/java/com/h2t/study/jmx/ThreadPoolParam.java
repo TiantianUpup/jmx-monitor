@@ -1,4 +1,4 @@
-package com.h2t.study.mbean;
+package com.h2t.study.jmx;
 
 import com.h2t.study.monitor.ThreadPoolMonitor;
 

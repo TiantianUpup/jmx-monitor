@@ -1,10 +1,11 @@
-package com.h2t.study;
+package com.h2t.study.test;
 
-import com.h2t.study.mbean.ThreadPoolParam;
+import com.h2t.study.jmx.HtmlAdaptor;
+import com.h2t.study.jmx.ThreadPoolParam;
 import com.h2t.study.monitor.ThreadPoolMonitor;
+import com.h2t.study.util.MBeanServerUtil;
 
 import javax.management.*;
-import java.lang.management.ManagementFactory;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 
@@ -24,14 +25,14 @@ public class Test {
         ExecutorService es2 = ThreadPoolMonitor.newCachedThreadPool("test-pool-2");
         ThreadPoolParam threadPoolParam2 = new ThreadPoolParam(es2);
 
-        MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-        server.registerMBean(threadPoolParam1, new ObjectName("test-pool-1:type=threadPoolParam"));
-        server.registerMBean(threadPoolParam2, new ObjectName("test-pool-2:type=threadPoolParam"));
+        MBeanServerUtil.registerMBean(threadPoolParam1, new ObjectName("test-pool-1:type=threadPoolParam"));
+        MBeanServerUtil.registerMBean(threadPoolParam2, new ObjectName("test-pool-2:type=threadPoolParam"));
 
+        //http连接的方式查看监控任务
+        HtmlAdaptor.start();
 
         executeTask(es1);
         executeTask(es2);
-
         Thread.sleep(1000 * 60 * 60);
     }
 
