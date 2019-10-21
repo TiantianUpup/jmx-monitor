@@ -1,4 +1,4 @@
-package com.h2t.study.jmx;
+package com.h2t.study.jmx.mbean;
 
 /**
  * @Description: 线程池监控参数MBean接口

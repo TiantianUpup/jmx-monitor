@@ -1,4 +1,4 @@
-package com.h2t.study.util;
+package com.h2t.study.jmx.server;
 
 import javax.management.*;
 import java.lang.management.ManagementFactory;

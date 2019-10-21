@@ -1,6 +1,6 @@
-package com.h2t.study.jmx;
+package com.h2t.study.jmx.adaptor;
 
-import com.h2t.study.util.MBeanServerUtil;
+import com.h2t.study.jmx.server.MBeanServerUtil;
 import com.sun.jdmk.comm.HtmlAdaptorServer;
 
 import javax.management.MalformedObjectNameException;

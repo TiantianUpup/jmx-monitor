@@ -1,9 +1,9 @@
 package com.h2t.study.test;
 
-import com.h2t.study.jmx.HtmlAdaptor;
-import com.h2t.study.jmx.ThreadPoolParam;
+import com.h2t.study.jmx.adaptor.HtmlAdaptor;
+import com.h2t.study.jmx.mbean.ThreadPoolParam;
+import com.h2t.study.jmx.server.MBeanServerUtil;
 import com.h2t.study.monitor.ThreadPoolMonitor;
-import com.h2t.study.util.MBeanServerUtil;
 
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;

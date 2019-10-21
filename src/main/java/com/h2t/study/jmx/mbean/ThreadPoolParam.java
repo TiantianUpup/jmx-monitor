@@ -1,4 +1,4 @@
-package com.h2t.study.jmx;
+package com.h2t.study.jmx.mbean;
 
 import com.h2t.study.monitor.ThreadPoolMonitor;
 
@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutorService;
  * @Date:2019/10/17 21:32 
  * @Version: 1.0
  */
-public class ThreadPoolParam implements ThreadPoolParamMBean  {
+public class ThreadPoolParam implements ThreadPoolParamMBean {
     private ThreadPoolMonitor threadPoolMonitor;
 
     public ThreadPoolParam(ExecutorService es) {
