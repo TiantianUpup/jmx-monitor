@@ -5,7 +5,8 @@ import com.h2t.study.jmx.ThreadPoolParam;
 import com.h2t.study.monitor.ThreadPoolMonitor;
 import com.h2t.study.util.MBeanServerUtil;
 
-import javax.management.*;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 
@@ -18,7 +19,8 @@ import java.util.concurrent.ExecutorService;
  */
 public class Test {
     private static Random random = new Random();
-    public static void main(String[] args) throws MalformedObjectNameException, NotCompliantMBeanException, InstanceAlreadyExistsException, MBeanRegistrationException, InterruptedException {
+
+    public static void main(String[] args) throws MalformedObjectNameException, InterruptedException {
         ExecutorService es1 = ThreadPoolMonitor.newCachedThreadPool("test-pool-1");
         ThreadPoolParam threadPoolParam1 = new ThreadPoolParam(es1);
 

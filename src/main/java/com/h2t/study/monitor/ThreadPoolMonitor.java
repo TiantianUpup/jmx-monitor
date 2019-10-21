@@ -122,6 +122,7 @@ public class ThreadPoolMonitor extends ThreadPoolExecutor {
         minCostTime = minCostTime < costTime ? minCostTime : costTime;
         totalCostTime.addAndGet(costTime);
         totalTasks.incrementAndGet();
+        ac = this.getActiveCount();  //获取ActiveCount的值
 
         logger.info("{}-pool-monitor: " +
                         "Duration: {} ms, PoolSize: {}, CorePoolSize: {}, ActiveCount: {}, " +
